@@ -46,6 +46,10 @@ User model:
 - country: String,
 - languages: [String]
 - birth: Date
+Home model:
+- name: String
+- user: Type User
+- locatiom: [Number]
 
 ## Links
 ### Trello
