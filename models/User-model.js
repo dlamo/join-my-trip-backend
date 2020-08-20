@@ -25,7 +25,11 @@ const UserSchema = new Schema({
   },
   country: String,
   languages: [String],
-  birth: Date
+  birth: Date,
+  isCompleted: {
+    type: Boolean,
+    default: false
+  }
 })
 
 module.exports = mongoose.model('User', UserSchema)

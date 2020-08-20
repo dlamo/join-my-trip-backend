@@ -16,7 +16,10 @@ require('./configs/passport');
 
 mongoose
   .connect('mongodb://localhost/join-my-trip-backend', {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
   })
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
@@ -71,7 +74,9 @@ app.use(
 );
 
 const index = require('./routes/index');
-app.use('/', index);
+const authRoutes = require('./routes/auth-routes')
 
+app.use('/', index);
+app.use('/api/auth', authRoutes)
 
 module.exports = app;
