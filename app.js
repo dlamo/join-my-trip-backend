@@ -74,9 +74,11 @@ app.use(
 );
 
 const index = require('./routes/index');
-const authRoutes = require('./routes/auth-routes')
+const authRoutes = require('./routes/authRoutes')
+const homeRoutes = require('./routes/homeRoutes')
 
 app.use('/', index);
 app.use('/api/auth', authRoutes)
+app.use('/api/home', homeRoutes)
 
 module.exports = app;

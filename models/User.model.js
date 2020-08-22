@@ -8,11 +8,11 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is mandatory!']
+    required: true
   },
   email: {
     type: String,
-    required: [true, 'Valid email is mandatory!'],
+    required: true,
     match: [/^\S+@\S+\.\S+$/, "Invalid email."],
     unique: true,
     lowercase: true,
@@ -24,7 +24,7 @@ const UserSchema = new Schema({
     default: 'https://banner2.cleanpng.com/20180603/jx/kisspng-user-interface-design-computer-icons-default-stephen-salazar-photography-5b1462e1b19d70.1261504615280626897275.jpg'
   },
   country: String,
-  languages: [String],
+  languages: String,
   birth: Date,
   isCompleted: {
     type: Boolean,

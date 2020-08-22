@@ -1,12 +1,12 @@
 const express = require('express')
-const authRoutes = express.Router()
+const authRouter = express.Router()
 const passport = require('passport')
 const uploader = require('../configs/cloudinary')
 const bcrypt = require('bcryptjs')
 const salt = bcrypt.genSaltSync(10);
-const User = require('../models/User-model')
+const User = require('../models/User.model')
 
-authRoutes.post('/login', (req, res, next) => {
+authRouter.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, theUser, failureDetails) => {
     if (err) {
         res.status(500).json({ message: 'Something went wrong authenticating user' });
@@ -28,7 +28,7 @@ authRoutes.post('/login', (req, res, next) => {
   })(req, res, next);
 })
 
-authRoutes.post('/signup', (req, res, next) => {
+authRouter.post('/signup', (req, res, next) => {
   const {username, password, email} = req.body
   if (!username || !password || !email) {
     res.status(400).json({ message: 'Provide all the fields' });
@@ -73,12 +73,12 @@ authRoutes.post('/signup', (req, res, next) => {
   });
 });
 
-authRoutes.post('/logout', (req, res, next) => {
+authRouter.post('/logout', (req, res, next) => {
   req.logout();
   res.status(200).json({ message: 'Log out success!' });
 });
 
-authRoutes.get('/loggedin', (req, res, next) => {
+authRouter.get('/loggedin', (req, res, next) => {
   if (req.isAuthenticated()) {
       res.status(200).json(req.user);
       return;
@@ -86,12 +86,12 @@ authRoutes.get('/loggedin', (req, res, next) => {
   res.status(403).json({ message: 'Unauthorized' });
 });
 
-/*authRoutes.post('/edit', (req, res, next) => {
-  const {username, campus, course} = req.body
+authRouter.put('/edit', (req, res, next) => {
+  const {name, country, languages, isCompleted} = req.body
   const userId = req.session.passport.user
   User.findByIdAndUpdate(
     userId, 
-    {username, campus, course}, 
+    {name, country, languages, isCompleted}, 
     {new: true}, 
     (err, updatedProfile) => {
       if (err) {
@@ -101,9 +101,9 @@ authRoutes.get('/loggedin', (req, res, next) => {
       res.status(200).json(updatedProfile)
     }
   )
-})*/
+})
 
-authRoutes.post('/upload', uploader.single("picture"), (req, res, next) => {
+authRouter.post('/upload', uploader.single("picture"), (req, res, next) => {
   if (!req.file) {
     next(new Error('No file uploaded!'));
     return;
@@ -123,4 +123,4 @@ authRoutes.post('/upload', uploader.single("picture"), (req, res, next) => {
   )
 })
 
-module.exports = authRoutes
+module.exports = authRouter
