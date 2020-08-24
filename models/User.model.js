@@ -29,6 +29,10 @@ const UserSchema = new Schema({
   isCompleted: {
     type: Boolean,
     default: false
+  },
+  home: {
+    type: Schema.Types.ObjectId,
+    ref: 'Home'
   }
 })
 

@@ -14,15 +14,15 @@ homeRouter.get('/', async (req, res, next) => {
 })
 
 homeRouter.post('/', async (req, res, next) => {
-  const {title, description, image, owner} = req.body
+  const {title, description, owner} = req.body
   const home = {
     title,
     description,
-    image,
     owner
   }
   try {
     const newHome = await Home.create(home)
+    await User.findByIdAndUpdate(owner, {home: newHome._id})
     res.json(newHome)
   } catch (error) {
     next(error)
