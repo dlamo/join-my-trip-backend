@@ -10,7 +10,7 @@ const HomeSchema = new Schema({
     type: String,
     required: true
   },
-  image: String,
+  picture: String,
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User'
