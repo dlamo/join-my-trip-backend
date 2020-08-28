@@ -3,7 +3,6 @@ const homeRouter = express.Router()
 const uploader = require('../configs/cloudinary')
 const User = require('../models/User.model')
 const Home = require('../models/Home.model')
-const { single } = require('../configs/cloudinary')
 
 homeRouter.get('/', async (req, res, next) => {
   try {
@@ -57,6 +56,24 @@ homeRouter.post('/upload', uploader.single("picture"), (req, res, next) => {
     return;
   }
   res.json(req.file.path)
+})
+
+homeRouter.put('/save-dates/:id', async (req, res, next) => {
+  const {id: homeId} = req.params
+  const savedDates = req.body
+  const userId = req.session.passport.user
+  const trip = {
+    dates: savedDates,
+    home: homeId
+  }
+  try {
+    const saveDates = Home.findByIdAndUpdate(homeId, {$push: {savedDates: savedDates}})
+    const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}})
+    const [,userUpdated] = await Promise.all([saveDates, saveTrip])
+    res.json(userUpdated)
+  } catch (error) {
+    next(error)
+  }
 })
 
 module.exports = homeRouter

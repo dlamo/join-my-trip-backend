@@ -14,7 +14,8 @@ const HomeSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  savedDates: [[String]]
 })
 
 module.exports = mongoose.model('Home', HomeSchema)

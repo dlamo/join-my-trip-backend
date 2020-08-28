@@ -33,7 +33,14 @@ const UserSchema = new Schema({
   home: {
     type: Schema.Types.ObjectId,
     ref: 'Home'
-  }
+  },
+  trips: [{
+    dates: [String],
+    home: {
+      type: Schema.Types.ObjectId,
+      ref: 'Home'
+    }
+  }]
 })
 
 module.exports = mongoose.model('User', UserSchema)
