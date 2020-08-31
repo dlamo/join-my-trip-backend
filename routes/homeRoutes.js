@@ -14,11 +14,12 @@ homeRouter.get('/', async (req, res, next) => {
 })
 
 homeRouter.post('/', async (req, res, next) => {
-  const {title, description, picture, owner} = req.body
+  const {title, description, pictures, conditions, owner} = req.body
   const home = {
     title,
     description,
-    picture,
+    pictures,
+    conditions,
     owner
   }
   try {
@@ -50,12 +51,13 @@ homeRouter.delete('/:id', async (req, res, next) => {
   }
 })
 
-homeRouter.post('/upload', uploader.single("picture"), (req, res, next) => {
-  if (!req.file) {
-    next(new Error('No file uploaded!'));
+homeRouter.post('/upload', uploader.array("picture"), (req, res, next) => {
+  if (!req.files) {
+    next(new Error('No file(s) uploaded!'));
     return;
   }
-  res.json(req.file.path)
+  const pictures = req.files.length ? Array.from(req.files).map(file => file.path) : undefined
+  res.json(pictures)
 })
 
 homeRouter.put('/save-dates/:id', async (req, res, next) => {
@@ -68,7 +70,7 @@ homeRouter.put('/save-dates/:id', async (req, res, next) => {
   }
   try {
     const saveDates = Home.findByIdAndUpdate(homeId, {$push: {savedDates: savedDates}})
-    const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}})
+    const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}}, {new: true})
     const [,userUpdated] = await Promise.all([saveDates, saveTrip])
     res.json(userUpdated)
   } catch (error) {

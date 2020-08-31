@@ -15,7 +15,9 @@ const HomeSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  savedDates: [[String]]
+  savedDates: [[String]],
+  conditions: [String],
+  pictures: [String]
 })
 
 module.exports = mongoose.model('Home', HomeSchema)
