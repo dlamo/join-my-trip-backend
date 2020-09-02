@@ -28,6 +28,10 @@ authRouter.post('/login', (req, res, next) => {
   })(req, res, next);
 })
 
+authRouter.get('/user', (req, res, next) => {
+  res.json({user: req.user})
+})
+
 authRouter.post('/signup', (req, res, next) => {
   const {username, password, email} = req.body
   if (!username || !password || !email) {

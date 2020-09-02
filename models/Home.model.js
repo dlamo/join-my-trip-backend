@@ -17,6 +17,7 @@ const HomeSchema = new Schema({
   },
   savedDates: [[String]],
   conditions: [String],
+  location: Schema.Types.Mixed,
   pictures: [String]
 })
 

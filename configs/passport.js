@@ -1,6 +1,6 @@
 const User          = require('../models/User.model');
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt        = require('bcryptjs'); // !!!
+const bcrypt        = require('bcryptjs');
 const passport      = require('passport');
 
 passport.serializeUser((loggedInUser, cb) => {
@@ -33,7 +33,7 @@ passport.use(new LocalStrategy((username, password, next) => {
       next(null, false, { message: 'Incorrect password.' });
       return;
     }
-
+    
     next(null, foundUser);
   });
 }));
