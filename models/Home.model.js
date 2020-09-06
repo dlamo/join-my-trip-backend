@@ -15,7 +15,7 @@ const HomeSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  savedDates: [[String]],
+  savedDates: [[Number]],
   conditions: [String],
   location: Schema.Types.Mixed,
   pictures: [String]

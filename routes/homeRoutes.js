@@ -56,13 +56,13 @@ homeRouter.post('/upload', uploader.array("picture"), (req, res, next) => {
 homeRouter.put('/save-dates/:id', async (req, res, next) => {
   const {id: homeId} = req.params
   const savedDates = req.body
-  const userId = req.session.passport.user
+  const userId = req.user
   const trip = {
     dates: savedDates,
     home: homeId
   }
   try {
-    const saveDates = Home.findByIdAndUpdate(homeId, {$push: {savedDates: savedDates}})
+    const saveDates = Home.findByIdAndUpdate(homeId, {$push: {savedDates: {$each: [...savedDates]}}})
     const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}}, {new: true})
     const [,userUpdated] = await Promise.all([saveDates, saveTrip])
     res.json(userUpdated)
@@ -75,9 +75,20 @@ homeRouter.get('/location', async (req, res, next) => {
   const location = unidecode(req.query.search)
   try {
     const path = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
-    const queryParams = 'inputtype=textquery&fields=formatted_address,geometry,place_id'
+    const queryParams = 'inputtype=textquery&language=en&fields=formatted_address,geometry,place_id'
     const {data} = await axios.get(`${path}?${queryParams}&key=${process.env.googleCloudKey}&input=${location}`)
     res.json(data.candidates)
+  } catch (error) {
+    next(error)
+  }
+})
+
+homeRouter.post('/search', async (req, res, next) => {
+  const {dates} = req.body
+  const city = unidecode(req.query.city)
+  try {
+    const homes = await Home.find({'location.region': city, 'savedDates': {'$nin': [...dates]}})
+    res.json(homes)
   } catch (error) {
     next(error)
   }
