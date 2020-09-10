@@ -8,7 +8,7 @@ passport.serializeUser((loggedInUser, cb) => {
 });
 
 passport.deserializeUser((userIdFromSession, cb) => {
-  User.findById(userIdFromSession, (err, userDocument) => {
+  User.findById(userIdFromSession).populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}}).exec((err, userDocument) => {
     if (err) {
       cb(err);
       return;
@@ -18,7 +18,7 @@ passport.deserializeUser((userIdFromSession, cb) => {
 });
 
 passport.use(new LocalStrategy((username, password, next) => {
-  User.findOne({ username }, (err, foundUser) => {
+  User.findOne({ username }).populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}}).exec((err, foundUser) => {
     if (err) {
       next(err);
       return;

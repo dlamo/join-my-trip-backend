@@ -27,7 +27,7 @@ homeRouter.post('/', async (req, res, next) => {
   }
   try {
     const newHome = await Home.create(home)
-    const user = await User.findByIdAndUpdate(owner, {home: newHome._id}, {new: true})
+    const user = await User.findByIdAndUpdate(owner, {home: newHome._id}, {new: true}).populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}})
     res.json(user)
   } catch (error) {
     next(error)
@@ -63,7 +63,7 @@ homeRouter.put('/save-dates/:id', async (req, res, next) => {
   }
   try {
     const saveDates = Home.findByIdAndUpdate(homeId, {$push: {savedDates: {$each: [...savedDates]}}})
-    const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}}, {new: true})
+    const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}}, {new: true}).populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}})
     const [,userUpdated] = await Promise.all([saveDates, saveTrip])
     res.json(userUpdated)
   } catch (error) {

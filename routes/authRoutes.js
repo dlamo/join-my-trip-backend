@@ -96,8 +96,9 @@ authRouter.put('/edit', (req, res, next) => {
   User.findByIdAndUpdate(
     userId, 
     {name, country, languages, isCompleted}, 
-    {new: true}, 
-    (err, updatedProfile) => {
+    {new: true})
+    .populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}}) 
+    .exec((err, updatedProfile) => {
       if (err) {
         res.status(400).json({ message: 'Saving user to database went wrong.' });
         return;
@@ -116,15 +117,16 @@ authRouter.post('/upload', uploader.single("picture"), (req, res, next) => {
   User.findByIdAndUpdate(
     userId, 
     {picture: req.file.path}, 
-    {new: true}, 
-    (err, updatedProfile) => {
+    {new: true})
+    .populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}}) 
+    .exec((err, updatedProfile) => {
       if (err) {
         res.status(400).json({ message: 'Saving user to database went wrong.' });
         return;
       }
       res.status(200).json(updatedProfile)
     }
-  )
+    )
 })
 
 module.exports = authRouter
