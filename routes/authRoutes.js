@@ -5,6 +5,7 @@ const uploader = require('../configs/cloudinary')
 const bcrypt = require('bcryptjs')
 const salt = bcrypt.genSaltSync(10);
 const User = require('../models/User.model')
+const Review = require('../models/Review.model')
 
 authRouter.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, theUser, failureDetails) => {
@@ -127,6 +128,20 @@ authRouter.post('/upload', uploader.single("picture"), (req, res, next) => {
       res.status(200).json(updatedProfile)
     }
     )
+})
+
+authRouter.get('/user/:id', async (req, res, next) => {
+  const {id} = req.params
+  try {
+    const getUser = User.findById(id)
+    const getReviews = Review.find({host: id})
+    const [user, reviews] = await Promise.all([getUser, getReviews])
+    user.password = undefined
+    user.trips = undefined
+    res.json({user, reviews})
+  } catch (error) {
+    next(error)
+  }
 })
 
 module.exports = authRouter

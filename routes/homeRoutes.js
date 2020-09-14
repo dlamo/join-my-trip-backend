@@ -5,6 +5,7 @@ const axios = require('axios')
 const unidecode = require('unidecode')
 const User = require('../models/User.model')
 const Home = require('../models/Home.model')
+const {transporter, saveDates} = require('../configs/nodemailer')
 
 homeRouter.get('/', async (req, res, next) => {
   try {
@@ -59,9 +60,11 @@ homeRouter.put('/save-dates/:id', async (req, res, next) => {
   const userId = req.user
   const trip = {
     dates: savedDates,
-    home: homeId
+    home: homeId,
+    isReviewed: false
   }
   try {
+    req.user
     const saveDates = Home.findByIdAndUpdate(homeId, {$push: {savedDates: {$each: [...savedDates]}}})
     const saveTrip = User.findByIdAndUpdate(userId, {$push: {trips: trip}}, {new: true}).populate('home').populate({path: 'trips', populate: {path: 'home', model: 'Home'}})
     const [,userUpdated] = await Promise.all([saveDates, saveTrip])
@@ -94,11 +97,36 @@ homeRouter.post('/search', async (req, res, next) => {
   }
 })
 
+homeRouter.get('/random', async (req, res, next) => {
+  try {
+    const homes = await Home.aggregate([{ $sample: { size: 2 } }])
+    res.json(homes)
+  } catch (error) {
+    next(error)
+  }
+})
+
 homeRouter.get('/:id', async (req, res, next) => {
   const {id} = req.params
   try {
     const home = await Home.findById(id)
     res.json(home)
+  } catch (error) {
+    next(error)
+  }
+})
+
+homeRouter.post('/dates-email', async (req, res, next) => {
+  const {emailData} = req.body
+  const {host: hostId, guest, startDate, endDate, message, guestEmail} = emailData
+  try {
+    const {username: host, email: hostEmail} = await User.findById(hostId)
+    await transporter.sendMail({
+      from: process.env.APPMAIL_ACCOUNT,
+      to: hostEmail,
+      subject: 'Join My Trip: New book at your home',
+      html: saveDates(host, guest, startDate, endDate, message, guestEmail)
+    }, (error, info) => error ? console.log(error) : res.json({message: 'Email sent: ' + info.response}))
   } catch (error) {
     next(error)
   }

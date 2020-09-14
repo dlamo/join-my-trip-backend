@@ -25,7 +25,6 @@ const UserSchema = new Schema({
   },
   country: String,
   languages: String,
-  birth: Date,
   isCompleted: {
     type: Boolean,
     default: false
@@ -39,7 +38,8 @@ const UserSchema = new Schema({
     home: {
       type: Schema.Types.ObjectId,
       ref: 'Home'
-    }
+    },
+    isReviewed: Boolean
   }]
 })
 
