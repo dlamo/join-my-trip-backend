@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs')
 const salt = bcrypt.genSaltSync(10);
 const User = require('../models/User.model')
 const Review = require('../models/Review.model')
+const {transporter, question} = require('../configs/nodemailer')
 
 authRouter.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, theUser, failureDetails) => {
@@ -139,6 +140,21 @@ authRouter.get('/user/:id', async (req, res, next) => {
     user.password = undefined
     user.trips = undefined
     res.json({user, reviews})
+  } catch (error) {
+    next(error)
+  }
+})
+
+authRouter.post('/user-email', async (req, res, next) => {
+  const {emailData} = req.body
+  const {host, user, message, guestEmail, hostEmail} = emailData
+  try {
+    await transporter.sendMail({
+      from: process.env.APPMAIL_ACCOUNT,
+      to: hostEmail,
+      subject: 'Join My Trip: A user wants to ask you',
+      html: question(host, user, message, guestEmail)
+    }, (error, info) => error ? console.log(error) : res.json({message: 'Email sent succesfully'}))
   } catch (error) {
     next(error)
   }

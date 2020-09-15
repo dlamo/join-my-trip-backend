@@ -126,7 +126,7 @@ homeRouter.post('/dates-email', async (req, res, next) => {
       to: hostEmail,
       subject: 'Join My Trip: New book at your home',
       html: saveDates(host, guest, startDate, endDate, message, guestEmail)
-    }, (error, info) => error ? console.log(error) : res.json({message: 'Email sent: ' + info.response}))
+    }, (error, info) => error ? console.log(error) : res.json({message: 'Email sent succesfully'}))
   } catch (error) {
     next(error)
   }
